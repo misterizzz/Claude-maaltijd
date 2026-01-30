@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="64" fill="#2c5f2d"/>
+  <g transform="translate(256,220)" text-anchor="middle">
+    <!-- Vork icoon -->
+    <g fill="white" transform="translate(-80,-80) scale(0.6)">
+      <rect x="60" y="30" width="12" height="180" rx="6"/>
+      <rect x="30" y="30" width="12" height="90" rx="6"/>
+      <rect x="90" y="30" width="12" height="90" rx="6"/>
+      <rect x="120" y="30" width="12" height="90" rx="6"/>
+      <rect x="0" y="30" width="12" height="90" rx="6"/>
+      <rect x="0" y="115" width="132" height="14" rx="7"/>
+    </g>
+    <!-- Mes icoon -->
+    <g fill="white" transform="translate(40,-80) scale(0.6)">
+      <rect x="20" y="30" width="16" height="180" rx="8"/>
+      <path d="M28,30 Q60,30 60,90 Q60,120 28,120 Z" fill="white"/>
+    </g>
+  </g>
+  <text x="256" y="400" font-family="Arial,sans-serif" font-size="72" font-weight="bold"
+        fill="white" text-anchor="middle">M</text>
+</svg>
