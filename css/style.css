@@ -11,7 +11,6 @@
 
 /* --- CSS Custom Properties (Odion huisstijl) --- */
 :root {
-  /* Odion brand colors */
   --odion-paars: #6A167A;
   --odion-rood: #EA5045;
   --odion-donkerrood: #B33556;
@@ -19,35 +18,30 @@
   --odion-wit: #FFFFFF;
   --odion-paars-dark: #5A1268;
   --odion-rood-dark: #D64539;
-  --odion-donkerrood-dark: #932D48;
-  --odion-geel-dark: #E6E65A;
-
-  /* Semantic aliases */
-  --color-primary: var(--odion-paars);
-  --color-primary-light: #7D1D92;
-  --color-primary-dark: var(--odion-paars-dark);
-  --color-accent: var(--odion-donkerrood);
+  --color-primary: #6A167A;
+  --color-primary-light: #7B2A8C;
+  --color-primary-dark: #5A1268;
+  --color-accent: #EA5045;
   --color-success: #4caf50;
   --color-success-bg: #e8f5e9;
   --color-warning: #ff9800;
-  --color-warning-bg: #fffde6;
-  --color-error: var(--odion-rood);
+  --color-warning-bg: #fff8e1;
+  --color-error: #EA5045;
   --color-error-bg: #fdecea;
   --color-bg: #FFFFFF;
   --color-surface: #FFFFFF;
-  --color-text: #2d2d2d;
+  --color-text: #333333;
   --color-text-secondary: #555555;
-  --color-text-light: #888888;
+  --color-text-light: #999999;
   --color-border: #dddddd;
-  --color-danger: var(--odion-rood);
-  --color-danger-hover: var(--odion-rood-dark);
-
+  --color-danger: #EA5045;
+  --color-danger-hover: #D64539;
   --radius: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
-  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
-  --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.15);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.12);
   --transition: 0.3s ease;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -162,7 +156,7 @@ button, .story-option {
   background: var(--odion-paars);
   color: white;
 }
-.btn-primary:hover { background: var(--odion-paars-dark); }
+.btn-primary:hover { background: var(--odion-paars-dark); transform: translateY(-2px); }
 
 .btn-secondary {
   background: var(--odion-rood);
@@ -338,7 +332,7 @@ header {
 .dashboard-welcome {
   text-align: center;
   padding: 24px 16px;
-  background: var(--odion-paars);
+  background: var(--color-primary);
   color: white;
   border-radius: var(--radius-xl);
   margin-bottom: 20px;
@@ -498,7 +492,7 @@ header {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: var(--odion-paars);
+  background: var(--color-success);
   color: white;
   font-size: 2rem;
   line-height: 64px;
@@ -639,14 +633,14 @@ header {
   gap: 12px;
   padding: 16px;
   background: #fffde6;
-  border: 1px solid var(--odion-geel-dark);
+  border: 1px solid #E6E65A;
   border-radius: var(--radius-lg);
   margin-bottom: 16px;
   animation: fadeIn 0.3s ease;
 }
 
 .hint-icon {
-  color: var(--color-warning);
+  color: #B8860B;
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -989,33 +983,42 @@ header {
   color: var(--odion-paars);
 }
 
+.researcher-section h3 {
+  font-size: 1rem;
+  color: var(--odion-paars);
+  margin-bottom: 12px;
+}
+
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
-  margin-bottom: 16px;
+  font-size: 0.85rem;
 }
 
 .data-table th {
   background: var(--odion-paars);
   color: white;
-  padding: 10px 12px;
+  padding: 10px 8px;
   text-align: left;
   font-weight: 600;
-  font-family: 'Montserrat', sans-serif;
+  white-space: nowrap;
 }
 
 .data-table th:first-child { border-radius: 8px 0 0 0; }
 .data-table th:last-child { border-radius: 0 8px 0 0; }
 
 .data-table td {
-  padding: 10px 12px;
+  padding: 8px;
   border-bottom: 1px solid var(--color-border);
-  color: var(--color-text);
 }
 
-.data-table tr:nth-child(even) td {
-  background: #f9f5fa;
+.data-table tr:nth-child(even) {
+  background: #f9f0fa;
 }
 
 .data-table tr:last-child td {
@@ -1023,13 +1026,13 @@ header {
 }
 
 .researcher-note {
-  background: #f5f0f7;
-  border: 1px solid rgba(106, 22, 122, 0.2);
-  border-radius: var(--radius);
-  padding: 12px 16px;
-  font-size: 0.88rem;
-  color: var(--odion-paars-dark);
-  line-height: 1.5;
+  margin-top: 16px;
+  padding: 12px;
+  background: #f9f0fa;
+  border-left: 4px solid var(--odion-paars);
+  border-radius: 0 8px 8px 0;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
 }
 
 .researcher-note strong {
@@ -1039,8 +1042,13 @@ header {
 /* --- Decorative Vormelementen --- */
 .odion-decorator {
   position: absolute;
-  overflow: hidden;
   pointer-events: none;
+  z-index: 0;
+}
+
+.has-decorator {
+  position: relative;
+  overflow: hidden;
 }
 
 .odion-circle {
@@ -1055,12 +1063,12 @@ header {
   border-radius: 0 0 50% 50%;
 }
 
-.odion-quarter-tl {
-  border-radius: 0 0 100% 0;
-}
-
 .odion-quarter-br {
   border-radius: 100% 0 0 0;
+}
+
+.odion-quarter-tl {
+  border-radius: 0 0 100% 0;
 }
 
 /* --- Animations --- */

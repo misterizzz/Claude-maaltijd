@@ -48,6 +48,10 @@
         <input type="text" id="setup-participant-id" placeholder="bijv. BGL-001" maxlength="20" autocomplete="off">
       </div>
       <div class="form-group">
+        <label for="setup-location">Locatie / team</label>
+        <input type="text" id="setup-location" placeholder="bijv. De Horizon - Team 3" maxlength="60" autocomplete="off">
+      </div>
+      <div class="form-group">
         <label for="setup-program-weeks">Duur programma (weken)</label>
         <input type="number" id="setup-program-weeks" min="15" max="30" value="20">
       </div>
@@ -105,9 +109,14 @@
 
   <!-- VIEW: DASHBOARD -->
   <main id="view-dashboard" class="view hidden">
-    <div class="dashboard-welcome has-decorator">
-      <div class="odion-decorator odion-circle" style="width:120px;height:120px;background:rgba(255,255,255,0.1);top:-30px;right:-30px;"></div>
-      <div class="odion-decorator odion-quarter-tl" style="width:80px;height:80px;background:rgba(234,80,69,0.3);bottom:0;left:0;"></div>
+    <div class="dashboard-welcome">
+      <!-- Decoratieve SVG vormelementen (Odion huisstijl) -->
+      <svg class="deco-circle-tr" aria-hidden="true" viewBox="0 0 120 120" width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="120" cy="0" r="80" fill="rgba(255,255,255,0.12)"/>
+      </svg>
+      <svg class="deco-quarter-bl" aria-hidden="true" viewBox="0 0 80 80" width="80" height="80" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 80 A80 80 0 0 1 80 0 L0 0 Z" fill="rgba(234,80,69,0.28)"/>
+      </svg>
       <h2 id="dashboard-greeting">Welkom</h2>
       <p id="dashboard-week-info">Week 1 van 20</p>
     </div>
@@ -170,6 +179,10 @@
 
   <!-- VIEW: CASUSVERHAAL -->
   <main id="view-story" class="view hidden">
+    <div class="section-header" id="story-section-header">
+      <h2>Casusopdracht</h2>
+      <p class="section-subtitle">Lees de situatie zorgvuldig en geef aan hoe je als begeleider zou reageren. Gebruik je kennis van de cliënt en je mentaliserend vermogen.</p>
+    </div>
     <div id="story-container">
       <div id="story-none" class="story-empty">
         <h2>Geen casusopdracht</h2>
@@ -331,8 +344,8 @@
       Alle data exporteren (CSV)
     </button>
 
-    <div class="researcher-note">
-      <p>In een toekomstige versie kan deze pagina beveiligd worden met een pincode, zodat alleen onderzoekers toegang hebben tot de resultaten.</p>
+    <div class="researcher-note" style="margin-top:16px; padding:12px; background:#f9f0fa; border-left:4px solid #6A167A; border-radius:8px;">
+      <p style="font-size:0.85rem; color:#555;">In een toekomstige versie kan deze pagina beveiligd worden met een pincode, zodat alleen onderzoekers toegang hebben tot de resultaten.</p>
     </div>
   </main>
 
