@@ -188,7 +188,10 @@ const App = (() => {
     const storyResults = await DB.getAllStoryResults();
     const thisWeekStories = schedule.filter(s => s.weekNumber === week);
     const thisWeekDone = storyResults.filter(r => r.weekNumber === week);
-    document.getElementById('dash-story-status').textContent = thisWeekStories.length === 0 ? 'Geen casus deze week' : thisWeekDone.length >= thisWeekStories.length ? 'Afgerond' : 'Beschikbaar';
+    // Prototype mode: show total completed vs total available
+    const totalDone = storyResults.length;
+    const totalAvailable = StoriesModule.getStoryCount() * 2; // each story 2x
+    document.getElementById('dash-story-status').textContent = totalDone >= totalAvailable ? 'Alle casussen afgerond' : (totalAvailable - totalDone) + ' casussen beschikbaar';
   }
 
   // --- Admin Dashboard ---
@@ -239,17 +242,30 @@ const App = (() => {
   }
 
   // --- Stories (open text) ---
+  // PROTOTYPE MODE: all stories available immediately, sequentially
+  // In production, filter by weekNumber === getCurrentWeek()
   async function loadCurrentStory() {
-    const week = getCurrentWeek();
-    const schedule = await DB.getSchedule();
     const results = await DB.getAllStoryResults();
-    const pending = schedule.filter(s => s.weekNumber === week).filter(s => !results.some(r => r.weekNumber === week && r.storyId === s.storyId && r.attempt === s.attempt));
-    if (pending.length === 0) {
+    const allStories = StoriesModule.getAllStories();
+
+    // Find next story not yet completed (any attempt)
+    let next = null;
+    for (const story of allStories) {
+      // Check attempt 1
+      if (!results.some(r => r.storyId === story.id && r.attempt === 1)) {
+        next = { storyId: story.id, attempt: 1 }; break;
+      }
+      // Check attempt 2
+      if (!results.some(r => r.storyId === story.id && r.attempt === 2)) {
+        next = { storyId: story.id, attempt: 2 }; break;
+      }
+    }
+
+    if (!next) {
       document.getElementById('story-none').classList.remove('hidden');
       document.getElementById('story-active').classList.add('hidden');
       return;
     }
-    const next = pending[0];
     currentStory = StoriesModule.getStoryById(next.storyId);
     if (!currentStory) { document.getElementById('story-none').classList.remove('hidden'); document.getElementById('story-active').classList.add('hidden'); return; }
     currentStoryAttempt = next.attempt;
