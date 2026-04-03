@@ -1,237 +1,198 @@
 /**
- * stories.js — Casusverhalen-module voor mentalisatietaak
+ * stories.js — Casusverhalen voor mentalisatietaak
  *
- * Bevat 10 verhalen over sociale situaties. Deelnemers moeten
- * inschatten wat de bedoeling/intentie is van de personages.
+ * 10 verhalen over begeleidingssituaties in de gehandicaptenzorg.
+ * Begeleiders moeten inschatten wat de bedoeling/intentie/emotie
+ * is van de cliënt in de casus.
  *
- * Scoringssysteem:
- *   2 = Correct antwoord bij eerste poging
- *   1 = Correct antwoord na hint
- *   0 = Fout antwoord na hint
+ * Cliëntnamen: Veerle, Rick, Cor, Meike, Roger (elk 2x)
  *
- * Elk verhaal wordt 2x aangeboden gedurende het programma.
+ * Scoringssysteem: 2 = correct eerste poging, 1 = correct na hint, 0 = fout na hint
  */
 const StoriesModule = (() => {
   'use strict';
 
-  /**
-   * De 10 casusverhalen.
-   * Elk verhaal bevat:
-   *   - id: unieke identifier
-   *   - title: korte titel
-   *   - story: het verhaal (de casus)
-   *   - question: de vraag over de intentie van het personage
-   *   - options: 4 antwoordmogelijkheden
-   *   - correctIndex: index van het juiste antwoord (0-3)
-   *   - hint: een hint die gegeven wordt bij een fout antwoord
-   *   - explanation: uitleg waarom het juiste antwoord correct is
-   */
   const STORIES = [
     {
       id: 1,
-      title: 'De nieuwe collega',
-      story: 'Lisa begint vandaag op haar nieuwe werk. Tijdens de lunch zit ze alleen aan een tafeltje. ' +
-        'Mark, een collega die al jaren bij het bedrijf werkt, ziet haar zitten. Hij loopt naar haar toe ' +
-        'met zijn lunchblad en vraagt of hij erbij mag komen zitten. Tijdens het gesprek stelt hij veel ' +
-        'vragen over haar vorige baan en haar interesses.',
-      question: 'Wat is de meest waarschijnlijke reden dat Mark bij Lisa gaat zitten en veel vragen stelt?',
+      title: 'Cor en het bord',
+      story: 'Tijdens het avondeten gooit Cor plotseling zijn bord van tafel. Het eten valt op de grond. ' +
+        'Cor kijkt je daarna aan met grote ogen en begint te huilen. Eerder op de dag was er een nieuw ' +
+        'dagprogramma geïntroduceerd waarbij Cor naast iemand anders moest zitten dan normaal.',
+      question: 'Wat is de meest waarschijnlijke reden voor Cors gedrag?',
       options: [
-        'Mark wil informatie verzamelen om Lisa later tegen te gebruiken',
-        'Mark wil Lisa welkom laten voelen en een collegiale band opbouwen',
-        'Mark zit haar uit te horen in opdracht van de manager',
-        'Mark probeert indruk te maken omdat hij verliefd is'
+        'Cor is boos en probeert jou als begeleider te provoceren',
+        'Cor vindt het eten niet lekker en laat dat op zijn manier zien',
+        'Cor raakt gefrustreerd door de veranderingen en kan dat niet goed uiten',
+        'Cor wil aandacht trekken en doet dit bewust om reactie uit te lokken'
       ],
-      correctIndex: 1,
-      hint: 'Denk na over wat de meest gebruikelijke reden is om een nieuwe collega op te zoeken tijdens de lunch. Welke intentie past het best bij normaal collegiaal gedrag?',
-      explanation: 'Mark laat typisch gastvrij collegiaal gedrag zien. Door naast een nieuwe collega te gaan zitten en interesse te tonen, helpt hij haar zich welkom te voelen op de werkplek.'
+      correctIndex: 2,
+      hint: 'Denk aan wat er eerder op de dag veranderd is. Cor huilt nadat hij het bord weggooit. Wat kan dat betekenen over hoe hij zich voelt?',
+      explanation: 'Cor reageert waarschijnlijk op de verandering in zijn dagprogramma. Het weggooien van het bord is een uiting van frustratie, niet van agressie. Zijn huilbui laat zien dat hij overweldigd is en steun zoekt. Veranderingen in routine kunnen heel stressvol zijn voor mensen met een beperking.'
     },
     {
       id: 2,
-      title: 'Het verjaardagsfeest',
-      story: 'Tom is uitgenodigd voor het verjaardagsfeest van zijn vriend Bas. Wanneer Tom aankomt, ' +
-        'merkt hij dat Bas vooral met andere gasten praat en niet meteen naar hem toe komt. Later op ' +
-        'de avond komt Bas naar Tom toe, geeft hem een hartelijke knuffel en zegt: "Sorry dat ik je niet ' +
-        'eerder gesproken heb, het is zo druk vanavond!"',
-      question: 'Waarom sprak Bas niet meteen met Tom toen hij aankwam?',
+      title: 'Veerle trekt zich terug',
+      story: 'Veerle zit normaal graag in de gemeenschappelijke woonkamer. De laatste dagen trekt ze zich ' +
+        'steeds vaker terug op haar kamer. Als je haar vraagt of alles goed is, zegt ze "ja hoor" maar ' +
+        'ze vermijdt oogcontact. Je weet dat haar vaste begeleider vorige week op vakantie is gegaan.',
+      question: 'Wat zou de meest waarschijnlijke verklaring zijn voor Veerles veranderde gedrag?',
       options: [
-        'Bas was boos op Tom en negeerde hem expres',
-        'Bas had het druk als gastheer en moest zijn aandacht verdelen over alle gasten',
-        'Bas vond de andere gasten belangrijker dan Tom',
-        'Bas had spijt dat hij Tom had uitgenodigd'
+        'Veerle is boos op het team omdat haar vaste begeleider weg is en straft jullie door zich terug te trekken',
+        'Veerle heeft gewoon een fase waarin ze meer alleen wil zijn, er is niets aan de hand',
+        'Veerle voelt zich onzeker door de afwezigheid van haar vertrouwde begeleider en zoekt veiligheid op haar kamer',
+        'Veerle doet alsof er iets mis is om extra aandacht te krijgen'
       ],
-      correctIndex: 1,
-      hint: 'Bedenk wat het betekent om gastheer te zijn op een feest met veel gasten. Hoe verklaart Bas zelf zijn gedrag later?',
-      explanation: 'Als gastheer van een feest moet Bas zijn aandacht verdelen over alle gasten. Zijn latere uitleg en hartelijke knuffel bevestigen dat hij Tom niet negeerde, maar simpelweg druk was.'
+      correctIndex: 2,
+      hint: 'Let op de timing: het gedrag begon toen haar vaste begeleider wegging. Wat betekent "ja hoor" zeggen terwijl je oogcontact vermijdt?',
+      explanation: 'Veerle voelt zich waarschijnlijk onzeker door het wegvallen van haar vertrouwde begeleider. Haar kamer voelt als een veilige plek. Dat ze "ja" zegt maar geen oogcontact maakt, laat zien dat ze haar gevoelens moeilijk kan benoemen. Dit is geen boosheid of aandachttrekken, maar een coping-mechanisme bij onzekerheid.'
     },
     {
       id: 3,
-      title: 'De boodschap',
-      story: 'Fatima stuurt een WhatsApp-bericht naar haar vriendin Sara: "Heb je zin om morgen koffie ' +
-        'te drinken?" Sara leest het bericht maar antwoordt pas de volgende ochtend met: "Sorry, had ' +
-        'je bericht wel gezien maar was gisteren heel druk met de kinderen. Vanmiddag kan ik wel!"',
-      question: 'Waarom reageerde Sara niet meteen op het bericht van Fatima?',
+      title: 'Rick bij de activiteit',
+      story: 'Tijdens een groepsactiviteit (tekenen) verscheurt Rick plotseling zijn eigen tekening en ' +
+        'die van de persoon naast hem. Daarna kruist hij zijn armen en kijkt boos voor zich uit. ' +
+        'Je had eerder die middag opgemerkt dat Rick moeite had met het vasthouden van het potlood ' +
+        'en dat een andere cliënt een compliment kreeg voor zijn tekening.',
+      question: 'Wat verklaart Ricks gedrag het beste?',
       options: [
-        'Sara vond het bericht niet belangrijk genoeg om op te reageren',
-        'Sara was aan het bedenken hoe ze Fatima kon afwijzen',
-        'Sara was druk bezig en had even geen ruimte om te reageren',
-        'Sara is boos op Fatima en liet haar expres wachten'
+        'Rick is jaloers en reageert zijn frustratie af op de tekening van de ander',
+        'Rick heeft een hekel aan tekenen en wil ermee stoppen',
+        'Rick voelt frustratie omdat hij ziet dat het hem niet lukt terwijl het een ander wel lukt, en kan die emotie niet anders uiten',
+        'Rick is agressief van aard en kan niet omgaan met groepsactiviteiten'
       ],
       correctIndex: 2,
-      hint: 'Let op wat Sara zelf zegt over waarom ze niet eerder reageerde. Welk antwoord sluit het best aan bij haar uitleg?',
-      explanation: 'Sara geeft een duidelijke en geloofwaardige reden: ze was druk met de kinderen. Ze toont ook interesse door alsnog een afspraak voor te stellen, wat laat zien dat ze de vriendschap waardeert.'
+      hint: 'Je zag dat Rick moeite had met het potlood. Kort daarna kreeg iemand anders een compliment. Hoe zou dat samengaan met wat er vervolgens gebeurde?',
+      explanation: 'Rick ervaart frustratie door het contrast tussen zijn eigen moeite en het succes van een ander. Het verscheuren van de tekeningen is een uiting van machteloosheid, niet van jaloezie of agressie. Hij mist de vaardigheden om zijn frustratie verbaal te uiten. Begrip voor deze onderliggende emotie helpt om adequaat te reageren.'
     },
     {
       id: 4,
-      title: 'De teamvergadering',
-      story: 'Tijdens een teamvergadering presenteert Jan zijn idee voor een nieuw project. Zijn ' +
-        'collega Petra stelt kritische vragen over het budget en de haalbaarheid van het plan. Na de ' +
-        'vergadering stuurt Petra Jan een e-mail: "Goed plan, Jan. Mijn vragen waren bedoeld om het ' +
-        'plan sterker te maken voordat we het aan de directie presenteren."',
-      question: 'Wat was de bedoeling van Petra\'s kritische vragen tijdens de vergadering?',
+      title: 'Meike en de knuffel',
+      story: 'Meike komt op je af en omhelst je stevig wanneer je de woonkamer binnenloopt. Ze laat niet ' +
+        'los als je dat aangeeft. Een collega zegt: "Ze doet dat bij iedereen, ze kent geen grenzen." ' +
+        'Je weet dat Meike vanmorgen te horen heeft gekregen dat haar moeder dit weekend niet op bezoek komt.',
+      question: 'Hoe kun je Meikes gedrag het beste begrijpen?',
       options: [
-        'Petra wilde Jan voor schut zetten waar het team bij was',
-        'Petra is jaloers op Jan en probeerde zijn plan te saboteren',
-        'Petra wilde het plan verbeteren door zwakke punten te identificeren',
-        'Petra wilde laten zien dat zij slimmer is dan Jan'
+        'Meike kent inderdaad geen grenzen en moet leren dat dit niet mag',
+        'Meike probeert je te manipuleren om extra aandacht te krijgen',
+        'Meike zoekt troost en nabijheid na het teleurstellende nieuws over haar moeder',
+        'Meike is ongepast gehecht en dit gedrag moet worden afgeleerd'
       ],
       correctIndex: 2,
-      hint: 'Kijk naar wat Petra achteraf zegt over haar intentie. Kritische vragen stellen hoeft niet negatief bedoeld te zijn. Wat kan een constructieve reden zijn?',
-      explanation: 'Petra stelde kritische vragen om het plan te versterken. Haar e-mail bevestigt dat ze constructief bedoelde te zijn en Jan wilde helpen een beter voorstel te maken voor de directie.'
+      hint: 'Meike hoorde net dat haar moeder niet komt. Wat zou een knuffel in die context kunnen betekenen? Kijk verder dan het zichtbare gedrag.',
+      explanation: 'Meikes stevige knuffel is waarschijnlijk een uiting van haar behoefte aan troost na het teleurstellende nieuws. In plaats van het gedrag alleen als "grensoverschrijdend" te labelen, helpt het om de functie ervan te begrijpen: ze zoekt veiligheid en nabijheid op een moment dat ze verdrietig is.'
     },
     {
       id: 5,
-      title: 'De speeltuin',
-      story: 'Op de speeltuin ziet moeder Anna dat een onbekende vrouw haar dochtertje Sophie aanspreekt. ' +
-        'De vrouw wijst naar de glijbaan en praat tegen Sophie. Anna loopt snel naar haar toe. De vrouw ' +
-        'zegt tegen Anna: "Ik zag dat uw dochtertje bijna van de bovenkant van de glijbaan viel. Ik heb ' +
-        'haar gewaarschuwd om voorzichtig te zijn."',
-      question: 'Wat was de intentie van de onbekende vrouw toen ze Sophie aansprak?',
+      title: 'Roger weigert',
+      story: 'Roger weigert al drie dagen om mee te doen met de dagbesteding. Hij zegt "nee" en draait ' +
+        'zich om als je het vraagt. Collega\'s worden hier gefrustreerd over. Je herinnert je dat Roger ' +
+        'vorige week is gevallen tijdens een activiteit en dat meerdere mensen dat zagen.',
+      question: 'Wat is de meest waarschijnlijke reden dat Roger weigert?',
       options: [
-        'De vrouw had slechte bedoelingen met Sophie',
-        'De vrouw wilde Sophie bang maken',
-        'De vrouw wilde Sophie beschermen tegen een mogelijk ongeluk',
-        'De vrouw wilde Anna bekritiseren als moeder'
+        'Roger test de grenzen en kijkt hoe ver hij kan gaan met weigeren',
+        'Roger is lui geworden en heeft geen motivatie meer',
+        'Roger voelt schaamte of angst na zijn val en vermijdt de situatie waar dat gebeurde',
+        'Roger heeft een hekel gekregen aan de dagbesteding en de andere deelnemers'
       ],
       correctIndex: 2,
-      hint: 'Bedenk wat de vrouw zelf zegt over waarom ze Sophie aansprak. In een speeltuin met kinderen, wat is een logische reden om een onbekend kind aan te spreken?',
-      explanation: 'De vrouw handelde uit bezorgdheid voor Sophie\'s veiligheid. Ze zag een gevaarlijke situatie en greep in door het kind te waarschuwen. Dit is een normaal beschermend gedrag van volwassenen naar kinderen.'
+      hint: 'Roger is vorige week gevallen waar anderen bij waren. Hoe zou dat een rol kunnen spelen in zijn weigering om terug te gaan?',
+      explanation: 'Rogers weigering is waarschijnlijk gerelateerd aan de val. Hij kan zich schamen dat anderen het zagen, of bang zijn om opnieuw te vallen. Dit is geen kwestie van grenzen testen of luiheid, maar van emotionele zelfbescherming. Het helpt om in gesprek te gaan over de val en zijn gevoel van veiligheid te herstellen.'
     },
     {
       id: 6,
-      title: 'De stilte',
-      story: 'Ahmed en zijn partner Noor hebben een drukke week gehad. Op zaterdagavond zitten ze ' +
-        'samen op de bank. Noor is stil en staart voor zich uit. Wanneer Ahmed vraagt of alles goed is, ' +
-        'zucht Noor en zegt: "Ja hoor, ik ben alleen moe. Het was zo\'n drukke week op het werk. ' +
-        'Ik geniet ervan om gewoon even stil naast je te zitten."',
-      question: 'Waarom was Noor stil op de bank?',
+      title: 'Veerle en het geluid',
+      story: 'Tijdens een gezamenlijke koffiepauze beginnen twee andere cliënten luid te praten en te lachen. ' +
+        'Veerle staat abrupt op, houdt haar handen tegen haar oren en loopt snel naar de gang. Een collega ' +
+        'zegt: "Veerle doet weer moeilijk, ze moet leren om erbij te blijven zitten."',
+      question: 'Hoe begrijp je Veerles reactie het beste?',
       options: [
-        'Noor is boos op Ahmed maar wil er niet over praten',
-        'Noor overweegt om de relatie te beëindigen',
-        'Noor voelt zich verveeld in Ahmeds gezelschap',
-        'Noor was moe en genoot van het rustige samenzijn'
+        'Veerle is onbeleefd en moet leren om gezelschap te verdragen',
+        'Veerle wordt overprikkeld door het geluid en beschermt zichzelf door weg te gaan',
+        'Veerle heeft een hekel aan die twee cliënten en wil niet bij ze zitten',
+        'Veerle zoekt een excuus om van de groep weg te zijn'
       ],
-      correctIndex: 3,
-      hint: 'Luister goed naar wat Noor zelf zegt over hoe ze zich voelt. Stilte hoeft niet altijd iets negatiefs te betekenen. Wat kan stilte ook betekenen?',
-      explanation: 'Noor was gewoon moe na een drukke week en vond het prettig om in stilte naast Ahmed te zitten. Stilte in een relatie kan juist een teken zijn van comfort en vertrouwen.'
+      correctIndex: 1,
+      hint: 'Let op het specifieke gedrag: handen tegen de oren. Wat vertelt dat lichaamstaal over wat Veerle ervaart?',
+      explanation: 'Veerle laat duidelijk zien dat ze overprikkeld raakt door het geluid — haar handen tegen haar oren is letterlijk een poging om de prikkel te verminderen. Het weglopen is een gezonde copingstrategie. Het is belangrijk om dit niet te interpreteren als "moeilijk doen" maar als zelfregulatie bij sensorische overbelasting.'
     },
     {
       id: 7,
-      title: 'De cadeau-uitwisseling',
-      story: 'Het is Sinterklaas op het werk. Iedereen doet mee met lootjes trekken. Kevin krijgt ' +
-        'een boek over tuinieren van zijn collega Daniëlle. Kevin houdt niet van tuinieren. Daniëlle ' +
-        'zegt erbij: "Ik wist niet zo goed wat je leuk zou vinden, dus ik heb iets gekozen wat ik ' +
-        'zelf ook leuk vind. Ik hoop dat je het wat vindt!"',
-      question: 'Waarom gaf Daniëlle een boek over tuinieren terwijl Kevin daar niet van houdt?',
+      title: 'Cor zoekt contact',
+      story: 'Cor komt steeds naar je toe tijdens de avonddienst. Hij zegt elke keer hetzelfde: "Wanneer ' +
+        'gaan we slapen?" Hoewel je al meerdere keren hebt uitgelegd dat het nog niet bedtijd is, blijft ' +
+        'hij terug komen. Een collega raakt geïrriteerd en zegt: "Hij luistert gewoon niet."',
+      question: 'Waarom blijft Cor steeds dezelfde vraag stellen?',
       options: [
-        'Daniëlle gaf expres iets wat Kevin niet leuk zou vinden om hem te pesten',
-        'Daniëlle kende Kevins interesses niet goed en koos iets vanuit haar eigen interesses',
-        'Daniëlle vindt Kevin niet aardig en deed geen moeite',
-        'Daniëlle wilde Kevin belachelijk maken waar iedereen bij was'
+        'Cor luistert inderdaad niet en heeft meer structuur nodig',
+        'Cor probeert je aandacht te monopoliseren',
+        'Cor voelt zich onrustig of angstig en de herhaalde vraag is een manier om contact en geruststelling te zoeken',
+        'Cor begrijpt het concept van tijd niet en heeft cognitief de uitleg niet begrepen'
       ],
-      correctIndex: 1,
-      hint: 'Let op wat Daniëlle zelf zegt over hoe ze het cadeau heeft uitgekozen. Wat vertelt dit over haar intentie?',
-      explanation: 'Daniëlle was eerlijk dat ze Kevins interesses niet goed kende en koos vanuit haar eigen referentiekader. Dit is geen kwade opzet, maar een onschuldige misvatting die vaak voorkomt bij lootjes trekken.'
+      correctIndex: 2,
+      hint: 'Het gaat niet om de letterlijke vraag over bedtijd. Waarom zou iemand steeds dezelfde vraag stellen terwijl hij het antwoord al heeft gehoord? Wat is de functie van het herhalen?',
+      explanation: 'Cors herhaalde vraag gaat waarschijnlijk niet over bedtijd zelf, maar over het zoeken van geruststelling en contact. Het herhalen van de vraag is een manier om nabijheid te zoeken wanneer hij zich onrustig voelt. Door voorbij de letterlijke vraag te kijken naar de emotionele behoefte, kun je beter reageren — bijvoorbeeld door even naast hem te gaan zitten.'
     },
     {
       id: 8,
-      title: 'De afzegging',
-      story: 'Eva heeft met haar vriendin Lotte afgesproken om samen te gaan wandelen. Een uur voor ' +
-        'de afspraak belt Lotte: "Eva, het spijt me heel erg maar ik moet afzeggen. Mijn zoon is ziek ' +
-        'geworden en heeft koorts. Ik moet bij hem blijven. Kunnen we het verzetten naar volgende week?" ' +
-        'Lotte klinkt gestrest aan de telefoon.',
-      question: 'Waarom zegt Lotte de afspraak af?',
+      title: 'Meike en het cadeau',
+      story: 'Meike heeft op de dagbesteding een tekening gemaakt. Ze komt stralend naar je toe en geeft ' +
+        'de tekening aan je. Je zegt vriendelijk "wat mooi!" en legt hem op de tafel. Meike\'s gezicht ' +
+        'betrekt, ze pakt de tekening terug en scheurt hem doormidden.',
+      question: 'Wat is de meest waarschijnlijke verklaring voor Meikes reactie?',
       options: [
-        'Lotte had geen zin meer en gebruikt haar zoon als excuus',
-        'Lotte vindt andere dingen altijd belangrijker dan Eva',
-        'Lotte moet voor haar zieke zoon zorgen en kan daardoor niet komen',
-        'Lotte vermijdt Eva en zoekt steeds redenen om af te zeggen'
+        'Meike kan niet tegen complimenten en reageert daar onvoorspelbaar op',
+        'Meike is boos omdat je de tekening niet goed genoeg waardeerde — op tafel leggen voelde als afwijzing',
+        'Meike had een slechte dag en reageerde het af op de tekening',
+        'Meike heeft moeite met het geven van cadeaus en had spijt'
       ],
-      correctIndex: 2,
-      hint: 'Let op de details: Lotte klinkt gestrest, ze biedt een alternatief aan en haar zoon is ziek. Wat zegt dit over haar intentie?',
-      explanation: 'Lotte zegt af vanwege een reële situatie: haar zoon is ziek. Ze klinkt gestrest (wat wijst op echte bezorgdheid), biedt excuses aan en stelt meteen een nieuwe datum voor. Dit zijn tekenen van een oprechte reden.'
+      correctIndex: 1,
+      hint: 'Meike kwam stralend naar je toe (positief). Haar gezicht betrok nadat je de tekening op tafel legde. Wat betekent het voor haar om iets persoonlijks te geven en dan te zien dat het "weggelegd" wordt?',
+      explanation: 'Voor Meike was de tekening een persoonlijk cadeau — een uiting van verbinding. Door het op tafel te leggen in plaats van het vast te houden of op te hangen, voelde dat voor haar als afwijzing. Haar reactie (scheuren) komt voort uit teleurstelling en gekwetstheid, niet uit grilligheid. Dit laat zien hoe belangrijk het is om te begrijpen wat een gebaar betekent vanuit het perspectief van de cliënt.'
     },
     {
       id: 9,
-      title: 'De feedback',
-      story: 'Rick heeft een rapport geschreven voor zijn opleiding. Zijn docent, mevrouw De Vries, ' +
-        'geeft het terug met veel rode aantekeningen en opmerkingen. Onderaan schrijft ze: "Rick, je ' +
-        'hebt een interessant onderwerp gekozen en goede bronnen gebruikt. De structuur kan sterker. ' +
-        'Kom gerust langs tijdens mijn spreekuur dan help ik je verder."',
-      question: 'Waarom heeft mevrouw De Vries zoveel aantekeningen gemaakt bij het rapport?',
+      title: 'Rick in de ochtend',
+      story: 'Rick wordt \'s ochtends wakker en weigert zijn bed uit te komen. Als je hem probeert te helpen ' +
+        'met aankleden, duwt hij je hand weg. Dit is nieuw gedrag — normaal werkt Rick goed mee in de ' +
+        'ochtendroutine. Gisteren is Rick naar de tandarts geweest waar een behandeling plaatsvond.',
+      question: 'Wat zou de reden kunnen zijn dat Rick niet wil opstaan?',
       options: [
-        'Ze vindt Rick een slechte student en wil hem ontmoedigen',
-        'Ze wil Rick helpen zijn rapport te verbeteren en biedt daarbij begeleiding aan',
-        'Ze wil laten zien hoe machtig ze is als docent',
-        'Ze heeft een hekel aan Rick en zoekt fouten om hem te laten zakken'
+        'Rick is opstandig en test hoe ver hij kan gaan',
+        'Rick is lui en wil in bed blijven',
+        'Rick heeft mogelijk pijn of ongemak na de tandartsbehandeling en kan dit niet goed verwoorden',
+        'Rick heeft slecht geslapen en is chagrijnig'
       ],
-      correctIndex: 1,
-      hint: 'Kijk naar het totaalplaatje: de docent noemt ook positieve punten en biedt hulp aan. Wat zegt dit over haar bedoeling met de aantekeningen?',
-      explanation: 'Mevrouw De Vries geeft gedetailleerde feedback om Rick te helpen verbeteren. Ze benoemt positieve aspecten, geeft constructieve kritiek en biedt persoonlijke begeleiding aan. Dit wijst op een investering in Ricks ontwikkeling.'
+      correctIndex: 2,
+      hint: 'Rick was gisteren bij de tandarts voor een behandeling. Dit gedrag is nieuw. Wat als Rick iets voelt dat hij niet kan uitleggen?',
+      explanation: 'De verandering in Ricks gedrag valt samen met het tandartsbezoek. Het is goed mogelijk dat hij pijn of ongemak heeft maar dit niet verbaal kan uiten. Het wegduwen van je hand bij het aankleden kan betekenen dat aanraking onprettig is. Bij mensen met een beperking is veranderd gedrag vaak een signaal van fysiek ongemak dat niet verwoord kan worden.'
     },
     {
       id: 10,
-      title: 'De buurman',
-      story: 'Sinds een paar weken merkt Karin dat haar buurman, meneer Jansen, elke ochtend haar ' +
-        'vuilnisbak aan de straat zet als het ophaaldag is. Ze heeft hem hier nooit om gevraagd. ' +
-        'Op een dag spreekt ze hem aan. Meneer Jansen lacht en zegt: "Ik zet die van mezelf toch al ' +
-        'buiten, dan neem ik die van jou ook even mee. Je vertrekt altijd vroeg naar je werk."',
-      question: 'Waarom zet meneer Jansen de vuilnisbak van Karin buiten?',
+      title: 'Roger en de nieuwe bewoner',
+      story: 'Er is een nieuwe bewoner op de groep gekomen. Roger, die normaal rustig en vriendelijk is, ' +
+        'begint vaker te schreeuwen en gooit dingen door de kamer. Dit gebeurt vooral op momenten dat jij ' +
+        'aandacht besteedt aan de nieuwe bewoner. Een collega zegt: "Roger is gewoon jaloers en moet ' +
+        'hier maar aan wennen."',
+      question: 'Hoe kun je Rogers veranderde gedrag het beste begrijpen?',
       options: [
-        'Hij wil Karin het gevoel geven dat ze bij hem in het krijt staat',
-        'Hij bemoeit zich met Karins zaken en respecteert haar privacy niet',
-        'Hij doet het als een vriendelijk gebaar omdat het hem weinig moeite kost',
-        'Hij probeert een romantische relatie met Karin te beginnen'
+        'Roger is jaloers en moet leren delen — het gaat vanzelf over',
+        'Roger voelt zich bedreigd in zijn veilige plek en mist de voorspelbaarheid van de situatie vóór de nieuwe bewoner',
+        'Roger kan niet tegen verandering en is niet geschikt voor een groep',
+        'Roger probeert de nieuwe bewoner weg te pesten'
       ],
-      correctIndex: 2,
-      hint: 'Let op de uitleg van meneer Jansen: hij zet zijn eigen vuilnisbak toch al buiten. Wat is de meest eenvoudige verklaring voor zijn gedrag?',
-      explanation: 'Meneer Jansen helpt Karin met een klein gebaar dat hem nauwelijks extra moeite kost. Hij merkte dat ze vroeg vertrekt en biedt pragmatische hulp. Dit is typisch goed buurmanschap zonder bijbedoelingen.'
+      correctIndex: 1,
+      hint: 'Rogers gedrag veranderde met de komst van de nieuwe bewoner. Het gebeurt vooral wanneer jij aandacht aan de ander geeft. Gaat het echt om jaloezie, of speelt er iets diepers?',
+      explanation: 'Rogers gedrag gaat dieper dan simpele jaloezie. De komst van een nieuwe bewoner verstoort zijn gevoel van veiligheid en voorspelbaarheid. Zijn schreeuwen en gooien zijn uitingen van onzekerheid over zijn plek in de groep. Door te erkennen dat Roger zich bedreigd voelt en hem extra geruststelling te bieden, help je hem om te wennen aan de nieuwe situatie.'
     }
   ];
 
-  /**
-   * Haal alle verhalen op.
-   * @returns {Array<Object>}
-   */
-  function getAllStories() {
-    return STORIES;
-  }
+  function getAllStories() { return STORIES; }
 
-  /**
-   * Haal een specifiek verhaal op basis van ID.
-   * @param {number} id - Het verhaal-ID (1-10)
-   * @returns {Object|null}
-   */
   function getStoryById(id) {
     return STORIES.find(s => s.id === id) || null;
   }
 
-  /**
-   * Beoordeel het antwoord van een deelnemer.
-   * @param {number} storyId - Het verhaal-ID
-   * @param {number} chosenIndex - Het gekozen antwoordindex (0-3)
-   * @param {boolean} isRetry - Of dit een tweede poging is (na hint)
-   * @returns {{correct: boolean, score: number, hint: string|null, explanation: string|null}}
-   */
   function evaluateAnswer(storyId, chosenIndex, isRetry) {
     const story = getStoryById(storyId);
     if (!story) return { correct: false, score: 0, hint: null, explanation: null };
@@ -239,32 +200,17 @@ const StoriesModule = (() => {
     const isCorrect = chosenIndex === story.correctIndex;
 
     if (isCorrect && !isRetry) {
-      // Eerste poging correct: 2 punten
       return { correct: true, score: 2, hint: null, explanation: story.explanation };
     } else if (isCorrect && isRetry) {
-      // Correct na hint: 1 punt
       return { correct: true, score: 1, hint: null, explanation: story.explanation };
     } else if (!isCorrect && !isRetry) {
-      // Fout eerste poging: geef hint, nog geen score
       return { correct: false, score: -1, hint: story.hint, explanation: null };
     } else {
-      // Fout na hint: 0 punten
       return { correct: false, score: 0, hint: null, explanation: story.explanation };
     }
   }
 
-  /**
-   * Haal het totaal aantal verhalen op.
-   * @returns {number}
-   */
-  function getStoryCount() {
-    return STORIES.length;
-  }
+  function getStoryCount() { return STORIES.length; }
 
-  return {
-    getAllStories,
-    getStoryById,
-    evaluateAnswer,
-    getStoryCount,
-  };
+  return { getAllStories, getStoryById, evaluateAnswer, getStoryCount };
 })();

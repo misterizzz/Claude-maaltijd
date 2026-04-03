@@ -3,36 +3,52 @@
    ==============================================
    PWA voor mentalisatie-onderzoek bij begeleiders
    in de gehandicaptenzorg.
-   Kleurthema: Odion teal/sage groen met warm crème.
+   Kleurthema: Odion huisstijl — paars, rood, donkerrood, geel.
    ============================================== */
+
+/* --- Google Fonts: Montserrat --- */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
 
 /* --- CSS Custom Properties (Odion huisstijl) --- */
 :root {
-  --color-primary: #4D8B82;
-  --color-primary-light: #5E9E94;
-  --color-primary-dark: #3D7069;
-  --color-accent: #6BA39A;
-  --color-success: #5E9E94;
-  --color-success-bg: #e8f0ee;
-  --color-warning: #C4975A;
-  --color-warning-bg: #faf4ec;
-  --color-error: #C0675A;
-  --color-error-bg: #faecea;
-  --color-bg: #EDECE4;
-  --color-surface: #FAFAF6;
-  --color-text: #2d3333;
-  --color-text-secondary: #556060;
-  --color-text-light: #8a9494;
-  --color-border: #d4d8d2;
-  --color-danger: #B05050;
-  --color-danger-hover: #944242;
+  /* Odion brand colors */
+  --odion-paars: #6A167A;
+  --odion-rood: #EA5045;
+  --odion-donkerrood: #B33556;
+  --odion-geel: #FFFF64;
+  --odion-wit: #FFFFFF;
+  --odion-paars-dark: #5A1268;
+  --odion-rood-dark: #D64539;
+  --odion-donkerrood-dark: #932D48;
+  --odion-geel-dark: #E6E65A;
+
+  /* Semantic aliases */
+  --color-primary: var(--odion-paars);
+  --color-primary-light: #7D1D92;
+  --color-primary-dark: var(--odion-paars-dark);
+  --color-accent: var(--odion-donkerrood);
+  --color-success: #4caf50;
+  --color-success-bg: #e8f5e9;
+  --color-warning: #ff9800;
+  --color-warning-bg: #fffde6;
+  --color-error: var(--odion-rood);
+  --color-error-bg: #fdecea;
+  --color-bg: #FFFFFF;
+  --color-surface: #FFFFFF;
+  --color-text: #2d2d2d;
+  --color-text-secondary: #555555;
+  --color-text-light: #888888;
+  --color-border: #dddddd;
+  --color-danger: var(--odion-rood);
+  --color-danger-hover: var(--odion-rood-dark);
+
   --radius: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
   --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.15);
-  --transition: 0.2s ease;
+  --transition: 0.3s ease;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -50,7 +66,7 @@ html {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Montserrat', sans-serif;
   background: var(--color-bg);
   color: var(--color-text);
   line-height: 1.6;
@@ -98,7 +114,7 @@ button, .story-option {
 .overlay-content h2 {
   font-size: 1.4rem;
   margin-bottom: 12px;
-  color: var(--color-primary);
+  color: var(--odion-paars);
 }
 
 .overlay-content p {
@@ -134,6 +150,7 @@ button, .story-option {
   border-radius: var(--radius);
   font-size: 1rem;
   font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   transition: background var(--transition), transform var(--transition);
   touch-action: manipulation;
@@ -142,22 +159,22 @@ button, .story-option {
 .btn:active { transform: scale(0.97); }
 
 .btn-primary {
-  background: var(--color-primary);
+  background: var(--odion-paars);
   color: white;
 }
-.btn-primary:hover { background: var(--color-primary-light); }
+.btn-primary:hover { background: var(--odion-paars-dark); }
 
 .btn-secondary {
-  background: var(--color-border);
-  color: var(--color-text);
-}
-.btn-secondary:hover { background: #d0d0d0; }
-
-.btn-danger {
-  background: var(--color-danger);
+  background: var(--odion-rood);
   color: white;
 }
-.btn-danger:hover { background: var(--color-danger-hover); }
+.btn-secondary:hover { background: var(--odion-rood-dark); }
+
+.btn-danger {
+  background: var(--odion-rood);
+  color: white;
+}
+.btn-danger:hover { background: var(--odion-rood-dark); }
 
 .btn-large {
   width: 100%;
@@ -211,14 +228,14 @@ button, .story-option {
   background: var(--color-surface);
   color: var(--color-text);
   transition: border-color var(--transition);
-  font-family: inherit;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--odion-paars);
 }
 
 .form-group textarea {
@@ -236,7 +253,7 @@ button, .story-option {
 
 /* --- Header --- */
 header {
-  background: var(--color-primary);
+  background: var(--odion-paars);
   color: white;
   position: sticky;
   top: 0;
@@ -275,6 +292,7 @@ header {
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.8rem;
   font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   transition: color var(--transition), background var(--transition);
   text-align: center;
@@ -306,7 +324,7 @@ header {
 
 .section-header h2 {
   font-size: 1.3rem;
-  color: var(--color-primary);
+  color: var(--odion-paars);
   margin-bottom: 6px;
 }
 
@@ -320,7 +338,7 @@ header {
 .dashboard-welcome {
   text-align: center;
   padding: 24px 16px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  background: var(--odion-paars);
   color: white;
   border-radius: var(--radius-xl);
   margin-bottom: 20px;
@@ -362,11 +380,11 @@ header {
   width: 52px;
   height: 52px;
   border-radius: var(--radius-lg);
-  background: var(--color-bg);
+  background: #f5f0f7;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-primary);
+  color: var(--odion-paars);
   flex-shrink: 0;
 }
 
@@ -419,7 +437,7 @@ header {
 
 .q-item-number {
   display: inline-block;
-  background: var(--color-primary);
+  background: var(--odion-paars);
   color: white;
   width: 24px;
   height: 24px;
@@ -445,6 +463,7 @@ header {
   background: var(--color-surface);
   font-size: 0.95rem;
   font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   transition: all var(--transition);
   text-align: center;
@@ -452,13 +471,13 @@ header {
 }
 
 .q-scale-btn:hover {
-  border-color: var(--color-primary);
-  background: var(--color-bg);
+  border-color: var(--odion-paars);
+  background: #f5f0f7;
 }
 
 .q-scale-btn.selected {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+  background: var(--odion-paars);
+  border-color: var(--odion-paars);
   color: white;
 }
 
@@ -479,7 +498,7 @@ header {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: var(--color-success);
+  background: var(--odion-paars);
   color: white;
   font-size: 2rem;
   line-height: 64px;
@@ -489,7 +508,7 @@ header {
 .done-message h3 {
   font-size: 1.3rem;
   margin-bottom: 8px;
-  color: var(--color-primary);
+  color: var(--odion-paars);
 }
 
 .done-message p {
@@ -504,7 +523,7 @@ header {
 }
 
 .story-empty h2 {
-  color: var(--color-primary);
+  color: var(--odion-paars);
   margin-bottom: 8px;
 }
 
@@ -521,7 +540,7 @@ header {
 }
 
 .story-badge {
-  background: var(--color-primary);
+  background: var(--odion-paars);
   color: white;
   padding: 4px 12px;
   border-radius: 20px;
@@ -530,8 +549,8 @@ header {
 }
 
 .attempt-badge {
-  background: var(--color-accent);
-  color: #2d2d2d;
+  background: var(--odion-rood);
+  color: white;
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 0.8rem;
@@ -544,12 +563,12 @@ header {
   padding: 20px;
   box-shadow: var(--shadow-lg);
   margin-bottom: 20px;
-  border-left: 4px solid var(--color-primary);
+  border-left: 4px solid var(--odion-paars);
 }
 
 .story-card h2 {
   font-size: 1.2rem;
-  color: var(--color-primary);
+  color: var(--odion-paars);
   margin-bottom: 12px;
 }
 
@@ -582,6 +601,7 @@ header {
   border: 2px solid var(--color-border);
   border-radius: var(--radius-lg);
   font-size: 0.9rem;
+  font-family: 'Montserrat', sans-serif;
   line-height: 1.5;
   cursor: pointer;
   transition: all var(--transition);
@@ -590,13 +610,13 @@ header {
 }
 
 .story-option:hover {
-  border-color: var(--color-primary);
-  background: var(--color-bg);
+  border-color: var(--odion-paars);
+  background: #f5f0f7;
 }
 
 .story-option.selected {
-  border-color: var(--color-primary);
-  background: rgba(58, 90, 140, 0.08);
+  border-color: var(--odion-paars);
+  background: rgba(106, 22, 122, 0.08);
 }
 
 .story-option.correct {
@@ -618,8 +638,8 @@ header {
   display: flex;
   gap: 12px;
   padding: 16px;
-  background: var(--color-warning-bg);
-  border: 1px solid var(--color-warning);
+  background: #fffde6;
+  border: 1px solid var(--odion-geel-dark);
   border-radius: var(--radius-lg);
   margin-bottom: 16px;
   animation: fadeIn 0.3s ease;
@@ -667,7 +687,7 @@ header {
 }
 
 .result-icon.score-0 {
-  background: var(--color-error);
+  background: var(--odion-rood);
   color: white;
 }
 
@@ -708,7 +728,7 @@ header {
 
 .obs-card-header h3 {
   font-size: 1rem;
-  color: var(--color-primary);
+  color: var(--odion-paars);
 }
 
 .obs-status {
@@ -720,7 +740,7 @@ header {
 
 .obs-status.not-done {
   background: var(--color-error-bg);
-  color: var(--color-error);
+  color: var(--odion-rood);
 }
 
 .obs-status.done {
@@ -763,7 +783,7 @@ header {
   display: block;
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--odion-paars);
 }
 
 .progress-section {
@@ -776,7 +796,7 @@ header {
 
 .progress-section h3 {
   font-size: 1rem;
-  color: var(--color-primary);
+  color: var(--odion-paars);
   margin-bottom: 12px;
 }
 
@@ -805,8 +825,8 @@ header {
 
 .chart-bar.score-high { background: var(--color-success); }
 .chart-bar.score-mid { background: var(--color-warning); }
-.chart-bar.score-low { background: var(--color-error); }
-.chart-bar.q-bar { background: var(--color-primary); }
+.chart-bar.score-low { background: var(--odion-rood); }
+.chart-bar.q-bar { background: var(--odion-paars); }
 
 .chart-label {
   font-size: 0.65rem;
@@ -839,7 +859,7 @@ header {
 .settings-section h2 {
   font-size: 1.1rem;
   margin-bottom: 14px;
-  color: var(--color-primary);
+  color: var(--odion-paars);
 }
 
 .info-text {
@@ -851,8 +871,8 @@ header {
 
 .privacy-badge {
   display: inline-block;
-  background: var(--color-success-bg);
-  color: var(--color-primary);
+  background: #f5f0f7;
+  color: var(--odion-paars);
   padding: 6px 12px;
   border-radius: 20px;
   font-weight: 600;
@@ -915,6 +935,7 @@ header {
   border-radius: var(--radius);
   font-size: 0.85rem;
   background: var(--color-surface);
+  font-family: 'Montserrat', sans-serif;
 }
 
 /* --- Dialog --- */
@@ -942,7 +963,7 @@ header {
   bottom: calc(20px + var(--safe-bottom));
   left: 50%;
   transform: translateX(-50%);
-  background: var(--color-primary);
+  background: var(--odion-paars);
   color: white;
   padding: 10px 24px;
   border-radius: 24px;
@@ -951,6 +972,95 @@ header {
   box-shadow: var(--shadow-lg);
   animation: slideUp 0.3s ease;
   z-index: 50;
+}
+
+/* --- Researcher Portal --- */
+.researcher-section {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.researcher-section h2 {
+  font-size: 1.1rem;
+  margin-bottom: 14px;
+  color: var(--odion-paars);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.data-table th {
+  background: var(--odion-paars);
+  color: white;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.data-table th:first-child { border-radius: 8px 0 0 0; }
+.data-table th:last-child { border-radius: 0 8px 0 0; }
+
+.data-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.data-table tr:nth-child(even) td {
+  background: #f9f5fa;
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.researcher-note {
+  background: #f5f0f7;
+  border: 1px solid rgba(106, 22, 122, 0.2);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  color: var(--odion-paars-dark);
+  line-height: 1.5;
+}
+
+.researcher-note strong {
+  font-weight: 700;
+}
+
+/* --- Decorative Vormelementen --- */
+.odion-decorator {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.odion-circle {
+  border-radius: 50%;
+}
+
+.odion-halfcircle-top {
+  border-radius: 50% 50% 0 0;
+}
+
+.odion-halfcircle-bottom {
+  border-radius: 0 0 50% 50%;
+}
+
+.odion-quarter-tl {
+  border-radius: 0 0 100% 0;
+}
+
+.odion-quarter-br {
+  border-radius: 100% 0 0 0;
 }
 
 /* --- Animations --- */

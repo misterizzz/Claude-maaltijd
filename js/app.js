@@ -28,18 +28,18 @@ const App = (() => {
   // Observation state
   let currentObsType = '';
 
-  // --- Vragenlijst definities ---
+  // --- Vragenlijst definities (voor begeleiders in de gehandicaptenzorg) ---
   const QUESTIONS = [
-    { id: 'q1', text: 'Ik vind het moeilijk om te begrijpen waarom anderen doen wat ze doen', category: 'mentaliseren', reversed: true },
-    { id: 'q2', text: 'Ik merk dat ik snel conclusies trek over andermans bedoelingen', category: 'mentaliseren', reversed: true },
-    { id: 'q3', text: 'Ik kan me goed verplaatsen in hoe anderen zich voelen', category: 'mentaliseren', reversed: false },
-    { id: 'q4', text: 'Als iemand boos reageert, denk ik na over mogelijke redenen daarvoor', category: 'mentaliseren', reversed: false },
-    { id: 'q5', text: 'Ik voel me gestrest', category: 'stress', reversed: true },
-    { id: 'q6', text: 'Ik voel me gespannen of onrustig', category: 'stress', reversed: true },
-    { id: 'q7', text: 'Ik kan me goed ontspannen', category: 'stress', reversed: false },
-    { id: 'q8', text: 'Ik voel me lichamelijk opgewonden of geprikkeld', category: 'arousal', reversed: true },
-    { id: 'q9', text: 'Ik slaap goed', category: 'arousal', reversed: false },
-    { id: 'q10', text: 'Ik voel me overweldigd door mijn emoties', category: 'arousal', reversed: true },
+    { id: 'q1', text: 'Ik vind het moeilijk om te begrijpen waarom cliënten zich op een bepaalde manier gedragen', category: 'mentaliseren', reversed: true },
+    { id: 'q2', text: 'Ik merk dat ik snel conclusies trek over de bedoelingen van cliënten', category: 'mentaliseren', reversed: true },
+    { id: 'q3', text: 'Ik kan me goed verplaatsen in hoe een cliënt zich voelt', category: 'mentaliseren', reversed: false },
+    { id: 'q4', text: 'Als een cliënt onverwacht reageert, sta ik stil bij mogelijke redenen daarvoor', category: 'mentaliseren', reversed: false },
+    { id: 'q5', text: 'Ik voel me gestrest in mijn werk als begeleider', category: 'stress', reversed: true },
+    { id: 'q6', text: 'Ik voel me gespannen of onrustig tijdens het begeleiden', category: 'stress', reversed: true },
+    { id: 'q7', text: 'Ik kan me na een werkdag goed ontspannen', category: 'stress', reversed: false },
+    { id: 'q8', text: 'Ik voel me lichamelijk opgewonden of geprikkeld door situaties op het werk', category: 'arousal', reversed: true },
+    { id: 'q9', text: 'Ik slaap goed, ook na een intensieve werkdag', category: 'arousal', reversed: false },
+    { id: 'q10', text: 'Ik voel me overweldigd door mijn emoties op het werk', category: 'arousal', reversed: true },
   ];
 
   // --- Initialisatie ---
@@ -214,6 +214,7 @@ const App = (() => {
       case 'story': loadCurrentStory(); break;
       case 'observations': updateObservations(); break;
       case 'progress': updateProgress(); break;
+      case 'researcher': updateResearcher(); break;
       case 'settings': populateSettings(); break;
     }
   }
@@ -646,6 +647,123 @@ const App = (() => {
     container.innerHTML = html;
   }
 
+  // --- Onderzoekersportaal ---
+
+  async function updateResearcher() {
+    const questionnaires = await DB.getAllQuestionnaires();
+    const storyResults = await DB.getAllStoryResults();
+    const observations = await DB.getAllObservations();
+    const week = getCurrentWeek();
+
+    // Summary stats
+    const rqCount = document.getElementById('researcher-q-count');
+    const rsCount = document.getElementById('researcher-s-count');
+    const rAvg = document.getElementById('researcher-avg');
+    const rWeeks = document.getElementById('researcher-weeks');
+
+    if (rqCount) rqCount.textContent = questionnaires.length;
+    if (rsCount) rsCount.textContent = storyResults.length;
+    if (rWeeks) rWeeks.textContent = week;
+
+    if (storyResults.length > 0) {
+      const avg = storyResults.reduce((s, r) => s + r.score, 0) / storyResults.length;
+      if (rAvg) rAvg.textContent = avg.toFixed(1);
+    } else {
+      if (rAvg) rAvg.textContent = '-';
+    }
+
+    // Questionnaire table: per-category averages per entry
+    const qTbody = document.getElementById('researcher-q-tbody');
+    if (qTbody) {
+      let html = '';
+      if (questionnaires.length === 0) {
+        html = '<tr><td colspan="6" style="text-align:center;padding:16px;color:#999;">Nog geen data</td></tr>';
+      } else {
+        for (const q of questionnaires) {
+          const byCategory = { mentaliseren: [], stress: [], arousal: [] };
+          for (const r of q.responses) {
+            const qDef = QUESTIONS.find(qd => qd.id === r.questionId);
+            if (qDef) byCategory[qDef.category].push(r.value);
+          }
+          const avgCat = (arr) => arr.length > 0 ? (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1) : '-';
+          const totalAvg = q.responses.length > 0 ? (q.responses.reduce((s, r) => s + r.value, 0) / q.responses.length).toFixed(1) : '-';
+          html += '<tr>';
+          html += '<td>' + q.weekNumber + '</td>';
+          html += '<td>' + q.date + '</td>';
+          html += '<td>' + avgCat(byCategory.mentaliseren) + '</td>';
+          html += '<td>' + avgCat(byCategory.stress) + '</td>';
+          html += '<td>' + avgCat(byCategory.arousal) + '</td>';
+          html += '<td><strong>' + totalAvg + '</strong></td>';
+          html += '</tr>';
+        }
+      }
+      qTbody.innerHTML = html;
+    }
+
+    // Story results table
+    const sTbody = document.getElementById('researcher-s-tbody');
+    if (sTbody) {
+      let html = '';
+      if (storyResults.length === 0) {
+        html = '<tr><td colspan="6" style="text-align:center;padding:16px;color:#999;">Nog geen data</td></tr>';
+      } else {
+        for (const r of storyResults) {
+          const story = StoriesModule.getStoryById(r.storyId);
+          const title = story ? story.title : 'Verhaal ' + r.storyId;
+          const scoreClass = r.score === 2 ? 'color:#4caf50' : r.score === 1 ? 'color:#ff9800' : 'color:#EA5045';
+          html += '<tr>';
+          html += '<td>' + r.weekNumber + '</td>';
+          html += '<td>' + r.date + '</td>';
+          html += '<td>' + title + '</td>';
+          html += '<td>' + r.attempt + '</td>';
+          html += '<td>' + (r.hintUsed ? 'Ja' : 'Nee') + '</td>';
+          html += '<td style="font-weight:700;' + scoreClass + '">' + r.score + '/2</td>';
+          html += '</tr>';
+        }
+      }
+      sTbody.innerHTML = html;
+    }
+
+    // Trend chart: story scores over time
+    const trendChart = document.getElementById('researcher-trend-chart');
+    if (trendChart) {
+      if (storyResults.length === 0) {
+        trendChart.innerHTML = '<div class="progress-empty">Nog geen casusresultaten</div>';
+      } else {
+        const maxH = 80;
+        let html = '';
+        for (const r of storyResults) {
+          const h = (r.score / 2) * maxH;
+          const cls = r.score === 2 ? 'score-high' : r.score === 1 ? 'score-mid' : 'score-low';
+          html += '<div class="chart-bar-container">';
+          html += '<div class="chart-value">' + r.score + '</div>';
+          html += '<div class="chart-bar ' + cls + '" style="height:' + Math.max(4, h) + 'px"></div>';
+          html += '<div class="chart-label">W' + r.weekNumber + '</div>';
+          html += '</div>';
+        }
+        trendChart.innerHTML = html;
+      }
+    }
+
+    // Observations list
+    const obsList = document.getElementById('researcher-obs-list');
+    if (obsList) {
+      if (observations.length === 0) {
+        obsList.innerHTML = '<p style="color:#999;text-align:center;padding:16px;">Nog geen observaties</p>';
+      } else {
+        let html = '';
+        for (const obs of observations) {
+          const typeLabels = { 'voor': 'Voormeting', 'na': 'Nameting', 'follow-up': 'Follow-up' };
+          html += '<div style="padding:12px;border-left:4px solid #6A167A;margin-bottom:8px;background:#f9f0fa;border-radius:0 8px 8px 0;">';
+          html += '<strong>' + (typeLabels[obs.type] || obs.type) + '</strong> — ' + obs.date;
+          html += '<p style="margin-top:4px;font-size:0.9rem;color:#555;">' + obs.notes + '</p>';
+          html += '</div>';
+        }
+        obsList.innerHTML = html;
+      }
+    }
+  }
+
   // --- Instellingen ---
 
   async function populateSettings() {
@@ -876,6 +994,10 @@ const App = (() => {
 
     // Progress
     document.getElementById('btn-export-all').addEventListener('click', () => ExportModule.exportAll());
+
+    // Researcher
+    const researcherExportBtn = document.getElementById('btn-researcher-export');
+    if (researcherExportBtn) researcherExportBtn.addEventListener('click', () => ExportModule.exportAll());
 
     // Settings
     document.getElementById('btn-save-settings').addEventListener('click', handleSaveSettings);

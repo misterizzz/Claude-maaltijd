@@ -4,7 +4,7 @@
  * Strategie: Cache-first met network fallback.
  */
 
-const CACHE_NAME = 'mentatrack-v1';
+const CACHE_NAME = 'mentatrack-v2';
 
 const ASSETS_TO_CACHE = [
   '/',
@@ -24,6 +24,7 @@ const ASSETS_TO_CACHE = [
   '/icons/icon-192.png',
   '/icons/icon-384.png',
   '/icons/icon-512.png',
+  '/assets/odion-logo.svg',
 ];
 
 self.addEventListener('install', (event) => {
