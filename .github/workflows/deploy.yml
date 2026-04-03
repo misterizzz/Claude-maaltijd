@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["claude/meal-attendance-pwa-aa155"]
+    branches: ["claude/meal-attendance-pwa-aa155", "claude/mental-health-tracking-app-hJ1LR"]
 
 permissions:
   contents: read
