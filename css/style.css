@@ -1,28 +1,28 @@
 /* ==============================================
-   MENTATRACK - Stylesheet
+   MENTATRACK - Stylesheet (Odion huisstijl)
    ==============================================
    PWA voor mentalisatie, stress en arousal tracking.
-   Kleurthema: blauw/paars, rustig en professioneel.
+   Kleurthema: Odion groen met warm oranje accent.
    ============================================== */
 
-/* --- CSS Custom Properties --- */
+/* --- CSS Custom Properties (Odion huisstijl) --- */
 :root {
-  --color-primary: #3a5a8c;
-  --color-primary-light: #4a6fa0;
-  --color-primary-dark: #2d4770;
-  --color-accent: #6b5b95;
+  --color-primary: #00843D;
+  --color-primary-light: #2E9E5E;
+  --color-primary-dark: #006B31;
+  --color-accent: #F39200;
   --color-success: #4caf50;
   --color-success-bg: #e8f5e9;
-  --color-warning: #ff9800;
-  --color-warning-bg: #fff3e0;
+  --color-warning: #F39200;
+  --color-warning-bg: #fef5e7;
   --color-error: #e53935;
   --color-error-bg: #ffebee;
-  --color-bg: #f5f7fa;
+  --color-bg: #f5f8f5;
   --color-surface: #ffffff;
-  --color-text: #212121;
-  --color-text-secondary: #616161;
+  --color-text: #2d2d2d;
+  --color-text-secondary: #555555;
   --color-text-light: #9e9e9e;
-  --color-border: #e0e0e0;
+  --color-border: #dde5dd;
   --color-danger: #c62828;
   --color-danger-hover: #b71c1c;
   --radius: 8px;
@@ -319,7 +319,7 @@ header {
 .dashboard-welcome {
   text-align: center;
   padding: 24px 16px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
   color: white;
   border-radius: var(--radius-xl);
   margin-bottom: 20px;
@@ -530,7 +530,7 @@ header {
 
 .attempt-badge {
   background: var(--color-accent);
-  color: white;
+  color: #2d2d2d;
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 0.8rem;
