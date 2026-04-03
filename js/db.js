@@ -1,26 +1,40 @@
 /**
  * db.js — Database-module (IndexedDB) met encryptie
  *
- * Beheert alle CRUD-operaties voor maaltijdregistraties.
+ * Beheert alle CRUD-operaties voor de MentaTrack app.
  * Data wordt versleuteld opgeslagen via CryptoModule.
  *
  * Schema:
- *   Store "records": key = "YYYY-MM-DD" (datum)
+ *   Store "questionnaires": key = auto-increment
  *     Waarde (na decryptie): {
- *       date: "YYYY-MM-DD",
- *       absences: { [clientNumber]: { breakfast: bool, lunch: bool, dinner: bool } }
+ *       id, date, weekNumber, responses: [{ questionId, value }]
+ *     }
+ *
+ *   Store "storyResults": key = auto-increment
+ *     Waarde (na decryptie): {
+ *       id, date, weekNumber, storyId, attempt,
+ *       firstAnswer, finalAnswer, score, hintUsed
+ *     }
+ *
+ *   Store "observations": key = auto-increment
+ *     Waarde (na decryptie): {
+ *       id, date, type ('voor'|'na'|'follow-up'), notes, scores
  *     }
  *
  *   Store "settings": key-value paar voor app-configuratie
+ *
+ *   Store "schedule": planning van wanneer welk verhaal wordt aangeboden
  */
 const DB = (() => {
   'use strict';
 
-  const DB_NAME = 'maaltijd_db';
+  const DB_NAME = 'mentatrack_db';
   const DB_VERSION = 1;
-  const STORE_RECORDS = 'records';
+  const STORE_QUESTIONNAIRES = 'questionnaires';
+  const STORE_STORIES = 'storyResults';
+  const STORE_OBSERVATIONS = 'observations';
   const STORE_SETTINGS = 'settings';
-  const MAX_AGE_DAYS = 90; // 3 maanden
+  const STORE_SCHEDULE = 'schedule';
 
   let dbInstance = null;
 
@@ -29,9 +43,7 @@ const DB = (() => {
    * @returns {Promise<IDBDatabase>}
    */
   function openDB() {
-    if (dbInstance) {
-      return Promise.resolve(dbInstance);
-    }
+    if (dbInstance) return Promise.resolve(dbInstance);
 
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -39,14 +51,20 @@ const DB = (() => {
       request.onupgradeneeded = (event) => {
         const db = event.target.result;
 
-        // Store voor dagelijkse registraties (key = datum string)
-        if (!db.objectStoreNames.contains(STORE_RECORDS)) {
-          db.createObjectStore(STORE_RECORDS, { keyPath: 'dateKey' });
+        if (!db.objectStoreNames.contains(STORE_QUESTIONNAIRES)) {
+          db.createObjectStore(STORE_QUESTIONNAIRES, { keyPath: 'id', autoIncrement: true });
         }
-
-        // Store voor instellingen (key-value)
+        if (!db.objectStoreNames.contains(STORE_STORIES)) {
+          db.createObjectStore(STORE_STORIES, { keyPath: 'id', autoIncrement: true });
+        }
+        if (!db.objectStoreNames.contains(STORE_OBSERVATIONS)) {
+          db.createObjectStore(STORE_OBSERVATIONS, { keyPath: 'id', autoIncrement: true });
+        }
         if (!db.objectStoreNames.contains(STORE_SETTINGS)) {
           db.createObjectStore(STORE_SETTINGS, { keyPath: 'key' });
+        }
+        if (!db.objectStoreNames.contains(STORE_SCHEDULE)) {
+          db.createObjectStore(STORE_SCHEDULE, { keyPath: 'id', autoIncrement: true });
         }
       };
 
@@ -62,13 +80,43 @@ const DB = (() => {
     });
   }
 
+  // --- Generieke helpers ---
+
+  async function putRecord(storeName, record) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      const store = tx.objectStore(storeName);
+      const req = store.put(record);
+      req.onsuccess = () => resolve(req.result);
+      tx.onerror = (e) => reject(e.target.error);
+    });
+  }
+
+  async function getAllRecords(storeName) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readonly');
+      const store = tx.objectStore(storeName);
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = (e) => reject(e.target.error);
+    });
+  }
+
+  async function countStore(storeName) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readonly');
+      const store = tx.objectStore(storeName);
+      const req = store.count();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = (e) => reject(e.target.error);
+    });
+  }
+
   // --- Instellingen ---
 
-  /**
-   * Sla een instelling op.
-   * @param {string} key
-   * @param {*} value
-   */
   async function setSetting(key, value) {
     const db = await openDB();
     return new Promise((resolve, reject) => {
@@ -80,172 +128,156 @@ const DB = (() => {
     });
   }
 
-  /**
-   * Haal een instelling op.
-   * @param {string} key
-   * @returns {Promise<*>} De waarde, of undefined als niet gevonden
-   */
   async function getSetting(key) {
     const db = await openDB();
     return new Promise((resolve, reject) => {
       const tx = db.transaction(STORE_SETTINGS, 'readonly');
       const store = tx.objectStore(STORE_SETTINGS);
       const req = store.get(key);
-      req.onsuccess = () => {
-        resolve(req.result ? req.result.value : undefined);
-      };
+      req.onsuccess = () => resolve(req.result ? req.result.value : undefined);
       req.onerror = (e) => reject(e.target.error);
     });
   }
 
-  // --- Registraties ---
+  // --- Vragenlijsten ---
 
   /**
-   * Sla de afwezigheidsstatus voor één dag op (versleuteld).
-   * @param {string} dateStr - Datum als "YYYY-MM-DD"
-   * @param {Object} absences - Object met clientnummer als key
-   *   bijv. { "101": { breakfast: false, lunch: true, dinner: false } }
-   *   true = afwezig, false = aanwezig
+   * Sla een ingevulde vragenlijst op (versleuteld).
+   * @param {Object} data - { date, weekNumber, responses: [{ questionId, value }] }
    */
-  async function saveRecord(dateStr, absences) {
-    const data = { date: dateStr, absences };
+  async function saveQuestionnaire(data) {
     const encrypted = await CryptoModule.encrypt(data);
+    return putRecord(STORE_QUESTIONNAIRES, { data: encrypted });
+  }
 
+  /**
+   * Haal alle vragenlijsten op (ontsleuteld).
+   * @returns {Promise<Array<Object>>}
+   */
+  async function getAllQuestionnaires() {
+    const records = await getAllRecords(STORE_QUESTIONNAIRES);
+    const results = [];
+    for (const record of records) {
+      try {
+        const decrypted = await CryptoModule.decrypt(record.data);
+        decrypted._id = record.id;
+        results.push(decrypted);
+      } catch (err) {
+        console.error('Decryptie fout vragenlijst:', err);
+      }
+    }
+    return results.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  }
+
+  // --- Verhaalresultaten ---
+
+  /**
+   * Sla een verhaalresultaat op (versleuteld).
+   * @param {Object} data - { date, weekNumber, storyId, attempt, firstAnswer, finalAnswer, score, hintUsed }
+   */
+  async function saveStoryResult(data) {
+    const encrypted = await CryptoModule.encrypt(data);
+    return putRecord(STORE_STORIES, { data: encrypted });
+  }
+
+  /**
+   * Haal alle verhaalresultaten op (ontsleuteld).
+   * @returns {Promise<Array<Object>>}
+   */
+  async function getAllStoryResults() {
+    const records = await getAllRecords(STORE_STORIES);
+    const results = [];
+    for (const record of records) {
+      try {
+        const decrypted = await CryptoModule.decrypt(record.data);
+        decrypted._id = record.id;
+        results.push(decrypted);
+      } catch (err) {
+        console.error('Decryptie fout verhaal:', err);
+      }
+    }
+    return results.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  }
+
+  // --- Observaties ---
+
+  /**
+   * Sla een observatie op (versleuteld).
+   * @param {Object} data - { date, type, notes, scores }
+   */
+  async function saveObservation(data) {
+    const encrypted = await CryptoModule.encrypt(data);
+    return putRecord(STORE_OBSERVATIONS, { data: encrypted });
+  }
+
+  /**
+   * Haal alle observaties op (ontsleuteld).
+   * @returns {Promise<Array<Object>>}
+   */
+  async function getAllObservations() {
+    const records = await getAllRecords(STORE_OBSERVATIONS);
+    const results = [];
+    for (const record of records) {
+      try {
+        const decrypted = await CryptoModule.decrypt(record.data);
+        decrypted._id = record.id;
+        results.push(decrypted);
+      } catch (err) {
+        console.error('Decryptie fout observatie:', err);
+      }
+    }
+    return results.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  }
+
+  // --- Planning ---
+
+  /**
+   * Sla de verhalenplanning op.
+   * @param {Array<Object>} schedule - [{ weekNumber, storyId, attempt }]
+   */
+  async function saveSchedule(schedule) {
     const db = await openDB();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_RECORDS, 'readwrite');
-      const store = tx.objectStore(STORE_RECORDS);
-      store.put({ dateKey: dateStr, data: encrypted });
+      const tx = db.transaction(STORE_SCHEDULE, 'readwrite');
+      const store = tx.objectStore(STORE_SCHEDULE);
+      store.clear();
+      for (const item of schedule) {
+        store.add(item);
+      }
       tx.oncomplete = () => resolve();
       tx.onerror = (e) => reject(e.target.error);
     });
   }
 
   /**
-   * Haal de registratie voor één dag op (ontsleuteld).
-   * @param {string} dateStr - Datum als "YYYY-MM-DD"
-   * @returns {Promise<Object|null>} De ontsleutelde data, of null
+   * Haal de verhalenplanning op.
+   * @returns {Promise<Array<Object>>}
    */
-  async function getRecord(dateStr) {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_RECORDS, 'readonly');
-      const store = tx.objectStore(STORE_RECORDS);
-      const req = store.get(dateStr);
-      req.onsuccess = async () => {
-        if (!req.result) {
-          resolve(null);
-          return;
-        }
-        try {
-          const decrypted = await CryptoModule.decrypt(req.result.data);
-          resolve(decrypted);
-        } catch (err) {
-          console.error('Decryptie fout voor', dateStr, err);
-          resolve(null);
-        }
-      };
-      req.onerror = (e) => reject(e.target.error);
-    });
+  async function getSchedule() {
+    return getAllRecords(STORE_SCHEDULE);
   }
 
-  /**
-   * Haal registraties op voor een reeks datums (inclusief).
-   * @param {string} startDate - "YYYY-MM-DD"
-   * @param {string} endDate - "YYYY-MM-DD"
-   * @returns {Promise<Array<Object>>} Array van ontsleutelde records
-   */
-  async function getRecordsInRange(startDate, endDate) {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_RECORDS, 'readonly');
-      const store = tx.objectStore(STORE_RECORDS);
-      const range = IDBKeyRange.bound(startDate, endDate);
-      const req = store.getAll(range);
+  // --- Statistieken ---
 
-      req.onsuccess = async () => {
-        const results = [];
-        for (const item of req.result) {
-          try {
-            const decrypted = await CryptoModule.decrypt(item.data);
-            results.push(decrypted);
-          } catch (err) {
-            console.error('Decryptie fout:', err);
-          }
-        }
-        // Sorteer op datum
-        results.sort((a, b) => a.date.localeCompare(b.date));
-        resolve(results);
-      };
-      req.onerror = (e) => reject(e.target.error);
-    });
+  async function getStats() {
+    const questionnaires = await countStore(STORE_QUESTIONNAIRES);
+    const stories = await countStore(STORE_STORIES);
+    const observations = await countStore(STORE_OBSERVATIONS);
+    return { questionnaires, stories, observations };
   }
 
-  /**
-   * Tel het totaal aantal opgeslagen registraties.
-   * @returns {Promise<number>}
-   */
-  async function countRecords() {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_RECORDS, 'readonly');
-      const store = tx.objectStore(STORE_RECORDS);
-      const req = store.count();
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = (e) => reject(e.target.error);
-    });
-  }
+  // --- Alles wissen ---
 
-  /**
-   * Verwijder registraties ouder dan 3 maanden.
-   * Wordt automatisch aangeroepen bij het opstarten van de app.
-   * @returns {Promise<number>} Aantal verwijderde records
-   */
-  async function purgeOldRecords() {
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - MAX_AGE_DAYS);
-    const cutoffStr = formatDate(cutoffDate);
-
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_RECORDS, 'readwrite');
-      const store = tx.objectStore(STORE_RECORDS);
-      // Alles vóór de cutoff-datum
-      const range = IDBKeyRange.upperBound(cutoffStr, true);
-      const req = store.openCursor(range);
-      let deleted = 0;
-
-      req.onsuccess = (event) => {
-        const cursor = event.target.result;
-        if (cursor) {
-          cursor.delete();
-          deleted++;
-          cursor.continue();
-        }
-      };
-
-      tx.oncomplete = () => {
-        if (deleted > 0) {
-          console.log(`${deleted} oude registratie(s) verwijderd (ouder dan ${cutoffStr})`);
-        }
-        resolve(deleted);
-      };
-      tx.onerror = (e) => reject(e.target.error);
-    });
-  }
-
-  /**
-   * Verwijder ALLE data (records + instellingen + encryptiesleutel).
-   */
   async function clearAllData() {
     const db = await openDB();
+    const storeNames = [STORE_QUESTIONNAIRES, STORE_STORIES, STORE_OBSERVATIONS, STORE_SETTINGS, STORE_SCHEDULE];
     return new Promise((resolve, reject) => {
-      const tx = db.transaction([STORE_RECORDS, STORE_SETTINGS], 'readwrite');
-      tx.objectStore(STORE_RECORDS).clear();
-      tx.objectStore(STORE_SETTINGS).clear();
+      const tx = db.transaction(storeNames, 'readwrite');
+      for (const name of storeNames) {
+        tx.objectStore(name).clear();
+      }
       tx.oncomplete = () => {
         CryptoModule.clearKey();
-        // Verwijder ook alle localStorage items
         localStorage.clear();
         dbInstance = null;
         resolve();
@@ -254,13 +286,8 @@ const DB = (() => {
     });
   }
 
-  // --- Hulpfunctie ---
+  // --- Hulpfuncties ---
 
-  /**
-   * Formatteer een Date-object als "YYYY-MM-DD".
-   * @param {Date} date
-   * @returns {string}
-   */
   function formatDate(date) {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -268,17 +295,29 @@ const DB = (() => {
     return `${y}-${m}-${d}`;
   }
 
-  // Publieke API
+  function getWeekNumber(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+  }
+
   return {
     openDB,
     setSetting,
     getSetting,
-    saveRecord,
-    getRecord,
-    getRecordsInRange,
-    countRecords,
-    purgeOldRecords,
+    saveQuestionnaire,
+    getAllQuestionnaires,
+    saveStoryResult,
+    getAllStoryResults,
+    saveObservation,
+    getAllObservations,
+    saveSchedule,
+    getSchedule,
+    getStats,
     clearAllData,
     formatDate,
+    getWeekNumber,
   };
 })();

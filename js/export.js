@@ -1,75 +1,91 @@
 /**
- * export.js — CSV-exportmodule
+ * export.js — CSV-exportmodule voor MentaTrack
  *
- * Genereert een CSV-bestand van de maaltijdregistraties
- * zodat data extern verwerkt kan worden (bijv. in Excel).
- *
- * Formaat:
- *   Datum;Cliëntnummer;Ontbijt;Lunch;Avondeten
- *   2025-01-15;101;Aanwezig;Afwezig;Aanwezig
+ * Exporteert vragenlijsten, verhaalresultaten en observaties
+ * als CSV-bestanden voor analyse.
  */
 const ExportModule = (() => {
   'use strict';
 
-  // CSV-scheidingsteken (puntkomma voor NL-locale / Excel)
   const SEPARATOR = ';';
 
   /**
-   * Genereer een CSV-string uit een array van records.
-   * @param {Array<Object>} records - Ontsleutelde records uit DB
-   *   Elk record: { date, absences: { [clientNr]: { breakfast, lunch, dinner } } }
-   * @param {Array<number>} clientNumbers - Lijst van cliëntnummers
-   * @returns {string} CSV-inhoud
+   * Genereer CSV voor vragenlijsten.
    */
-  function generateCSV(records, clientNumbers) {
+  function generateQuestionnairesCSV(questionnaires) {
     const lines = [];
+    lines.push(['Datum', 'Week', 'VraagID', 'Vraag', 'Score'].join(SEPARATOR));
 
-    // Header
-    lines.push(
-      ['Datum', 'Cliëntnummer', 'Ontbijt', 'Lunch', 'Avondeten'].join(SEPARATOR)
-    );
+    const questionLabels = {
+      q1: 'Ik vind het moeilijk om te begrijpen waarom anderen doen wat ze doen',
+      q2: 'Ik merk dat ik snel conclusies trek over andermans bedoelingen',
+      q3: 'Ik kan me goed verplaatsen in hoe anderen zich voelen',
+      q4: 'Als iemand boos reageert denk ik na over mogelijke redenen',
+      q5: 'Ik voel me gestrest',
+      q6: 'Ik voel me gespannen of onrustig',
+      q7: 'Ik kan me goed ontspannen',
+      q8: 'Ik voel me lichamelijk opgewonden of geprikkeld',
+      q9: 'Ik slaap goed',
+      q10: 'Ik voel me overweldigd door mijn emoties'
+    };
 
-    // Data-rijen
-    for (const record of records) {
-      for (const clientNr of clientNumbers) {
-        const key = String(clientNr);
-        const abs = record.absences?.[key] || {};
-
-        const breakfast = abs.breakfast ? 'Afwezig' : 'Aanwezig';
-        const lunch = abs.lunch ? 'Afwezig' : 'Aanwezig';
-        const dinner = abs.dinner ? 'Afwezig' : 'Aanwezig';
-
-        lines.push(
-          [record.date, clientNr, breakfast, lunch, dinner].join(SEPARATOR)
-        );
+    for (const q of questionnaires) {
+      for (const resp of (q.responses || [])) {
+        const label = questionLabels[resp.questionId] || resp.questionId;
+        lines.push([q.date, q.weekNumber, resp.questionId, `"${label}"`, resp.value].join(SEPARATOR));
       }
     }
+    return lines.join('\n');
+  }
 
+  /**
+   * Genereer CSV voor verhaalresultaten.
+   */
+  function generateStoriesCSV(storyResults) {
+    const lines = [];
+    lines.push([
+      'Datum', 'Week', 'VerhaalID', 'VerhaalTitel', 'Poging',
+      'EersteAntwoord', 'UiteindelijkAntwoord', 'HintGebruikt', 'Score'
+    ].join(SEPARATOR));
+
+    for (const r of storyResults) {
+      const story = StoriesModule.getStoryById(r.storyId);
+      const title = story ? `"${story.title}"` : r.storyId;
+      lines.push([
+        r.date, r.weekNumber, r.storyId, title, r.attempt,
+        r.firstAnswer, r.finalAnswer, r.hintUsed ? 'Ja' : 'Nee', r.score
+      ].join(SEPARATOR));
+    }
+    return lines.join('\n');
+  }
+
+  /**
+   * Genereer CSV voor observaties.
+   */
+  function generateObservationsCSV(observations) {
+    const lines = [];
+    lines.push(['Datum', 'Type', 'Notities'].join(SEPARATOR));
+
+    for (const obs of observations) {
+      const notes = obs.notes ? `"${obs.notes.replace(/"/g, '""')}"` : '';
+      lines.push([obs.date, obs.type, notes].join(SEPARATOR));
+    }
     return lines.join('\n');
   }
 
   /**
    * Download een CSV-string als bestand.
-   * @param {string} csvContent - De CSV-inhoud
-   * @param {string} filename - Bestandsnaam (zonder extensie)
    */
   function downloadCSV(csvContent, filename) {
-    // BOM (Byte Order Mark) voor correcte weergave van speciale tekens in Excel
     const bom = '\uFEFF';
-    const blob = new Blob([bom + csvContent], {
-      type: 'text/csv;charset=utf-8;',
-    });
-
+    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = `${filename}.csv`;
     link.style.display = 'none';
-
     document.body.appendChild(link);
     link.click();
-
-    // Opruimen
     setTimeout(() => {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
@@ -77,26 +93,36 @@ const ExportModule = (() => {
   }
 
   /**
-   * Exporteer registraties als CSV-bestand.
-   * @param {Array<Object>} records - De records om te exporteren
-   * @param {Array<number>} clientNumbers - Cliëntnummers
-   * @param {string} periodLabel - Label voor de bestandsnaam (bijv. "week-03")
+   * Exporteer alle data als CSV-bestanden.
    */
-  function exportToCSV(records, clientNumbers, periodLabel) {
-    if (!records || records.length === 0) {
-      alert('Geen data om te exporteren.');
-      return;
+  async function exportAll() {
+    const date = DB.formatDate(new Date());
+
+    const questionnaires = await DB.getAllQuestionnaires();
+    if (questionnaires.length > 0) {
+      downloadCSV(generateQuestionnairesCSV(questionnaires), `mentatrack-vragenlijsten_${date}`);
     }
 
-    const csv = generateCSV(records, clientNumbers);
-    const filename = `maaltijd-registratie_${periodLabel}`;
-    downloadCSV(csv, filename);
+    const stories = await DB.getAllStoryResults();
+    if (stories.length > 0) {
+      downloadCSV(generateStoriesCSV(stories), `mentatrack-verhalen_${date}`);
+    }
+
+    const observations = await DB.getAllObservations();
+    if (observations.length > 0) {
+      downloadCSV(generateObservationsCSV(observations), `mentatrack-observaties_${date}`);
+    }
+
+    if (questionnaires.length === 0 && stories.length === 0 && observations.length === 0) {
+      alert('Geen data om te exporteren.');
+    }
   }
 
-  // Publieke API
   return {
-    generateCSV,
+    generateQuestionnairesCSV,
+    generateStoriesCSV,
+    generateObservationsCSV,
     downloadCSV,
-    exportToCSV,
+    exportAll,
   };
 })();
