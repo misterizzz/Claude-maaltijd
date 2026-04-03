@@ -39,21 +39,26 @@ const ExportModule = (() => {
   }
 
   /**
-   * Genereer CSV voor verhaalresultaten.
+   * Genereer CSV voor verhaalresultaten (open antwoorden).
    */
   function generateStoriesCSV(storyResults) {
     const lines = [];
     lines.push([
       'Datum', 'Week', 'VerhaalID', 'VerhaalTitel', 'Poging',
-      'EersteAntwoord', 'UiteindelijkAntwoord', 'HintGebruikt', 'Score'
+      'Antwoord', 'HerzienAntwoord', 'HintGebruikt', 'AutoScore', 'HandmatigeScore', 'OnderzoekerNotitie'
     ].join(SEPARATOR));
 
     for (const r of storyResults) {
       const story = StoriesModule.getStoryById(r.storyId);
       const title = story ? `"${story.title}"` : r.storyId;
+      const answer = r.answerText ? `"${r.answerText.replace(/"/g, '""')}"` : '';
+      const revised = r.revisedText ? `"${r.revisedText.replace(/"/g, '""')}"` : '';
+      const manualScore = r.manualScore !== null && r.manualScore !== undefined ? r.manualScore : '';
+      const note = r.researcherNote ? `"${r.researcherNote.replace(/"/g, '""')}"` : '';
       lines.push([
         r.date, r.weekNumber, r.storyId, title, r.attempt,
-        r.firstAnswer, r.finalAnswer, r.hintUsed ? 'Ja' : 'Nee', r.score
+        answer, revised, r.hintUsed ? 'Ja' : 'Nee',
+        r.autoScore !== undefined ? r.autoScore : '', manualScore, note
       ].join(SEPARATOR));
     }
     return lines.join('\n');

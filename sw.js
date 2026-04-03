@@ -4,7 +4,7 @@
  * Strategie: Cache-first met network fallback.
  */
 
-const CACHE_NAME = 'mentatrack-v2';
+const CACHE_NAME = 'mentatrack-v3';
 
 const ASSETS_TO_CACHE = [
   '/',

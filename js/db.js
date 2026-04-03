@@ -173,11 +173,41 @@ const DB = (() => {
 
   /**
    * Sla een verhaalresultaat op (versleuteld).
-   * @param {Object} data - { date, weekNumber, storyId, attempt, firstAnswer, finalAnswer, score, hintUsed }
+   * @param {Object} data - { date, weekNumber, storyId, attempt, answerText, revisedText, autoScore, manualScore, hintUsed, researcherNote }
    */
   async function saveStoryResult(data) {
     const encrypted = await CryptoModule.encrypt(data);
     return putRecord(STORE_STORIES, { data: encrypted });
+  }
+
+  /**
+   * Update de score van een verhaalresultaat (voor onderzoeker).
+   * @param {number} recordId - Het _id van het record
+   * @param {number} manualScore - De handmatige score (0, 1 of 2)
+   * @param {string} note - Optionele toelichting van de onderzoeker
+   */
+  async function updateStoryScore(recordId, manualScore, note) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_STORIES, 'readwrite');
+      const store = tx.objectStore(STORE_STORIES);
+      const req = store.get(recordId);
+      req.onsuccess = async () => {
+        if (!req.result) { resolve(false); return; }
+        try {
+          const decrypted = await CryptoModule.decrypt(req.result.data);
+          decrypted.manualScore = manualScore;
+          decrypted.researcherNote = note || '';
+          const encrypted = await CryptoModule.encrypt(decrypted);
+          store.put({ id: recordId, data: encrypted });
+          tx.oncomplete = () => resolve(true);
+        } catch (err) {
+          console.error('Update score fout:', err);
+          resolve(false);
+        }
+      };
+      req.onerror = (e) => reject(e.target.error);
+    });
   }
 
   /**
@@ -311,6 +341,7 @@ const DB = (() => {
     getAllQuestionnaires,
     saveStoryResult,
     getAllStoryResults,
+    updateStoryScore,
     saveObservation,
     getAllObservations,
     saveSchedule,
