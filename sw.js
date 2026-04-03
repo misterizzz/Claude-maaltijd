@@ -1,20 +1,18 @@
 /**
- * sw.js — Service Worker voor offline-first PWA
+ * sw.js — Service Worker voor MentaTrack PWA
  *
  * Strategie: Cache-first met network fallback.
- * Alle app-bestanden worden bij installatie gecached zodat
- * de app volledig offline werkt.
  */
 
-const CACHE_NAME = 'maaltijd-v1';
+const CACHE_NAME = 'mentatrack-v1';
 
-// Bestanden om te cachen bij installatie
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/css/style.css',
   '/js/crypto.js',
   '/js/db.js',
+  '/js/stories.js',
   '/js/export.js',
   '/js/app.js',
   '/manifest.json',
@@ -28,9 +26,6 @@ const ASSETS_TO_CACHE = [
   '/icons/icon-512.png',
 ];
 
-/**
- * Install-event: cache alle benodigde bestanden.
- */
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
@@ -39,16 +34,10 @@ self.addEventListener('install', (event) => {
         console.log('[SW] Bestanden worden gecached...');
         return cache.addAll(ASSETS_TO_CACHE);
       })
-      .then(() => {
-        // Forceer activatie zonder te wachten op andere tabs
-        return self.skipWaiting();
-      })
+      .then(() => self.skipWaiting())
   );
 });
 
-/**
- * Activate-event: verwijder oude caches bij updates.
- */
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
@@ -63,31 +52,19 @@ self.addEventListener('activate', (event) => {
             })
         );
       })
-      .then(() => {
-        // Neem direct controle over alle open pagina's
-        return self.clients.claim();
-      })
+      .then(() => self.clients.claim())
   );
 });
 
-/**
- * Fetch-event: cache-first strategie.
- * Probeer eerst uit cache te serveren, val terug op netwerk.
- */
 self.addEventListener('fetch', (event) => {
-  // Alleen GET-verzoeken cachen
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
+      if (cachedResponse) return cachedResponse;
 
-      // Niet in cache: probeer van het netwerk te laden
       return fetch(event.request)
         .then((networkResponse) => {
-          // Bewaar een kopie in de cache voor toekomstig gebruik
           if (networkResponse && networkResponse.status === 200) {
             const responseClone = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => {
@@ -97,8 +74,6 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(() => {
-          // Als het netwerk ook niet beschikbaar is, toon een fallback
-          // voor navigatie-verzoeken
           if (event.request.mode === 'navigate') {
             return caches.match('/index.html');
           }
