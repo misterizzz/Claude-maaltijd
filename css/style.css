@@ -551,6 +551,15 @@ header {
   font-weight: 600;
 }
 
+.week-badge {
+  background: var(--odion-donkerrood);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
 .story-card {
   background: var(--color-surface);
   border-radius: var(--radius-xl);

@@ -246,6 +246,7 @@ const App = (() => {
   // In production, filter by weekNumber === getCurrentWeek()
   async function loadCurrentStory() {
     const results = await DB.getAllStoryResults();
+    const schedule = await DB.getSchedule();
     const allStories = StoriesModule.getAllStories();
 
     // Find next story not yet completed (any attempt)
@@ -266,6 +267,11 @@ const App = (() => {
       document.getElementById('story-active').classList.add('hidden');
       return;
     }
+
+    // Look up scheduled week for display purposes
+    const scheduled = schedule.find(s => s.storyId === next.storyId && s.attempt === next.attempt);
+    const scheduledWeek = scheduled ? scheduled.weekNumber : null;
+    next.scheduledWeek = scheduledWeek;
     currentStory = StoriesModule.getStoryById(next.storyId);
     if (!currentStory) { document.getElementById('story-none').classList.remove('hidden'); document.getElementById('story-active').classList.add('hidden'); return; }
     currentStoryAttempt = next.attempt;
@@ -279,6 +285,8 @@ const App = (() => {
     document.getElementById('story-char-count').textContent = '0';
     document.getElementById('story-badge').textContent = 'Casus ' + currentStory.id + ' van ' + StoriesModule.getStoryCount();
     document.getElementById('story-attempt-badge').textContent = 'Poging ' + currentStoryAttempt;
+    const weekBadge = document.getElementById('story-week-badge');
+    if (weekBadge) weekBadge.textContent = scheduledWeek ? 'Week ' + scheduledWeek : '';
     document.getElementById('story-title').textContent = currentStory.title;
     document.getElementById('story-text').textContent = currentStory.story;
     document.getElementById('story-question').textContent = currentStory.question;
